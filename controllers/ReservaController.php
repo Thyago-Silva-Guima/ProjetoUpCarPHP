@@ -150,7 +150,7 @@ class ReservaController {
     private function bloquearAcessoDePassageiro(): void {
         if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'motorista') {
             $this->definirMensagemFlash('erro', 'Acesso restrito a motoristas.');
-            header('Location: ../views/caronas/index.php');
+            header('Location: index.php?action=dashboard');
             exit;
         }
     }
@@ -158,7 +158,7 @@ class ReservaController {
     private function bloquearAcessoDeMotorista(): void {
         if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'passageiro') {
             $this->definirMensagemFlash('erro', 'Acesso restrito a passageiros.');
-            header('Location: ../views/caronas/index.php');
+            header('Location: index.php?action=dashboard');
             exit;
         }
     }

@@ -17,7 +17,7 @@ $passageiros = $dados['passageiros'] ?? [];
     <header class="bg-[#2196f3] p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold text-white">UPCAR</h1>
-            <a href="../../controllers/buscar_caronas.php" class="text-white hover:text-blue-200 text-sm font-semibold transition-colors">
+            <a href="buscar_caronas.php" class="text-white hover:text-blue-200 text-sm font-semibold transition-colors">
                 ← Voltar ao Feed
             </a>
         </div>
@@ -52,7 +52,7 @@ $passageiros = $dados['passageiros'] ?? [];
                                     <strong class="text-[#81c9fa]">Membro desde:</strong> <?= $dataCadastro ?>
                                 </p>
                             </div>
-                            <a href="../relatorios/form_relatorio.php?denunciado_id=<?= (int)$usuario['id'] ?>"
+                            <a href="../views/relatorios/form_relatorio.php?denunciado_id=<?= (int)$usuario['id'] ?>"
                                 class="text-center text-xs bg-red-900 hover:bg-red-700 text-red-200 font-semibold py-1 px-3 rounded-lg transition-colors">
                             </a>
                         </article>

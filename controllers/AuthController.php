@@ -1,7 +1,7 @@
 <?php
 // controllers/AuthController.php — Controla login, registro, recuperação e logout
 
-require_once __DIR__ . '/../Config/Banco.php'; // ✅ path atualizado para Config/ (maiúsculo)
+require_once __DIR__ . '/../Config/Banco.php'; 
 require_once __DIR__ . '/../models/Usuario.php';
 
 class AuthController {
@@ -10,7 +10,6 @@ class AuthController {
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
-        // Gera token CSRF global na sessão (protege todos os formulários)
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
@@ -18,13 +17,11 @@ class AuthController {
         $this->model = new Usuario();
     }
 
-    // Verifica se o token do formulário bate com o da sessão
     private function csrfValido() {
         return isset($_POST['csrf_token']) &&
                hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
     }
 
-    // Atalho para redirecionar com mensagem de erro ou sucesso
     private function redirecionar($action, $erro = null, $sucesso = null) {
         if ($erro)    $_SESSION['erro']    = $erro;
         if ($sucesso) $_SESSION['sucesso'] = $sucesso;
@@ -32,12 +29,10 @@ class AuthController {
         exit;
     }
 
-    // --- Exibir telas ---
     public function exibirLogin()       { require __DIR__ . '/../views/auth/login.php'; }
     public function exibirRegistro()    { require __DIR__ . '/../views/auth/registro.php'; }
     public function exibirRecuperacao() { require __DIR__ . '/../views/auth/recuperar_senha.php'; }
 
-    // --- Processar Login ---
     public function processarLogin() {
         if (!$this->csrfValido()) {
             $this->redirecionar('login', 'Requisição inválida.');
@@ -48,19 +43,12 @@ class AuthController {
 
         $usuario = $this->model->buscarPorEmail($email);
 
-        // password_verify compara a senha digitada com o hash salvo no banco
         if ($usuario && password_verify($senha, $usuario['senha'])) {
-            session_regenerate_id(true); // segurança: troca o ID da sessão após login
+            session_regenerate_id(true); 
             $_SESSION['usuario_id']   = $usuario['id'];
             $_SESSION['usuario_nome'] = $usuario['nome'];
-
-            // ✅ CORREÇÃO: chave renomeada de 'usuario_tipo' para 'tipo_usuario'
-            // O CaronaController do Aluno 2 verifica $_SESSION['tipo_usuario'].
-            // Se a chave fosse diferente, o motorista nunca passaria pela verificação
-            // de acesso e recebia "Acesso negado" em todas as operações.
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
 
-            // Cookie "lembrar e-mail" por 7 dias
             if (!empty($_POST['lembrar'])) {
                 setcookie('upcar_email', $email, time() + 604800, '/', '', false, true);
             }
@@ -72,7 +60,6 @@ class AuthController {
         $this->redirecionar('login', 'E-mail ou senha incorretos.');
     }
 
-    // --- Processar Registro ---
     public function processarRegistro() {
         if (!$this->csrfValido()) {
             $this->redirecionar('registro', 'Requisição inválida.');
@@ -85,7 +72,6 @@ class AuthController {
         $data_nascimento = $_POST['data_nascimento'] ?? '';
         $tipo_usuario    = $_POST['tipo_usuario'] ?? '';
 
-        // Validações com if/else e switch
         $erros = [];
 
         if (strlen($nome) < 3) {
@@ -107,7 +93,7 @@ class AuthController {
         switch ($tipo_usuario) {
             case 'passageiro':
             case 'motorista':
-                break; // válido
+                break;
             default:
                 $erros[] = 'Selecione um tipo de usuário.';
         }
@@ -122,6 +108,10 @@ class AuthController {
             $this->redirecionar('registro', 'Este e-mail já está cadastrado.');
         }
 
+        if ($this->model->cpfExiste($cpf)) {
+            $this->redirecionar('registro', 'Este CPF já está cadastrado.');
+        }
+
         $this->model->registrar([
             'nome'            => $nome,
             'email'           => $email,
@@ -134,7 +124,6 @@ class AuthController {
         $this->redirecionar('login', null, 'Cadastro realizado! Faça login.');
     }
 
-    // --- Processar Recuperação de Senha ---
     public function processarRecuperacao() {
         if (!$this->csrfValido()) {
             $this->redirecionar('recuperar', 'Requisição inválida.');
@@ -150,6 +139,9 @@ class AuthController {
             if (strlen($nova) < 6) {
                 $this->redirecionar('recuperar', 'Nova senha deve ter no mínimo 6 caracteres.');
             }
+            if (password_verify($nova, $usuario['senha'])) {
+                $this->redirecionar('recuperar', 'A nova senha não pode ser igual à sua senha atual.');
+            }
             $this->model->atualizarSenha($usuario['id'], $nova);
             $this->redirecionar('login', null, 'Senha redefinida com sucesso!');
         } else {
@@ -157,7 +149,6 @@ class AuthController {
         }
     }
 
-    // --- Logout ---
     public function logout() {
         session_unset();
         session_destroy();

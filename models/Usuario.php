@@ -49,6 +49,12 @@ class Usuario {
         return (bool) $stmt->fetch();
     }
 
+    public function cpfExiste($cpf) {
+        $stmt = $this->db->prepare("SELECT id FROM usuarios WHERE cpf = :cpf LIMIT 1");
+        $stmt->execute([':cpf' => $cpf]);
+        return (bool) $stmt->fetch();
+    }
+
     // Atualiza a senha (usada na recuperação)
     public function atualizarSenha($id, $novaSenha) {
         $stmt = $this->db->prepare("UPDATE usuarios SET senha = :senha WHERE id = :id");

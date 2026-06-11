@@ -1,5 +1,15 @@
 <?php
 session_start();
+
+if (empty($_SESSION['usuario_id'])) {
+    header('Location: ../../index.php?action=login');
+    exit;
+}
+
+if ($_SESSION['tipo_usuario'] !== 'motorista') {
+    header('Location: ../../index.php?action=dashboard');
+    exit;
+}
 require_once '../../Config/Banco.php';
 require_once '../../models/Carona.php';
 

@@ -20,10 +20,17 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             <p class="text-[#81c9fa] mt-1 text-sm">Criar nova conta</p>
         </header>
 
+        <?php if (!empty($_SESSION['erro'])): ?>
+            <div class="mb-4 p-3 bg-red-900 border border-red-600 rounded-lg text-red-300 text-sm">
+                <?= htmlspecialchars($_SESSION['erro']) ?>
+            </div>
+            <?php unset($_SESSION['erro']); ?>
+        <?php endif; ?>
+
         <?php if (!empty($_SESSION['erros'])): ?>
             <div class="mb-4 p-3 bg-red-900 border border-red-600 rounded-lg text-red-300 text-sm">
-                <?php foreach ($_SESSION['erros'] as $erro): ?>
-                    <p>• <?= htmlspecialchars($erro) ?></p>
+                <?php foreach ($_SESSION['erros'] as $erroValidacao): ?>
+                    <p>• <?= htmlspecialchars($erroValidacao) ?></p>
                 <?php endforeach; ?>
             </div>
             <?php unset($_SESSION['erros']); ?>
@@ -33,7 +40,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
             <?php
-            // foreach para renderizar os campos dinamicamente
             $campos = [
                 ['id' => 'nome',            'label' => 'Nome Completo',        'type' => 'text',     'name' => 'nome'],
                 ['id' => 'email',           'label' => 'E-mail Institucional', 'type' => 'email',    'name' => 'email'],
