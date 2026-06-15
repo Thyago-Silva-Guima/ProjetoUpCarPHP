@@ -1,7 +1,4 @@
 <?php
-// Config/Banco.php — Conexão PDO com padrão Singleton
-// ATENÇÃO: pasta renomeada de config/ para Config/ (C maiúsculo)
-// para compatibilidade com os require_once do Aluno 2.
 
 class Banco {
     private static $instancia = null;
