@@ -1,5 +1,5 @@
 <?php
-// models/Usuario.php — Toda lógica de banco de dados relacionada ao usuário
+
 
 require_once __DIR__ . '/../Config/Banco.php'; 
 
@@ -7,10 +7,9 @@ class Usuario {
     private $db;
 
     public function __construct() {
-        $this->db = Banco::getConexao(); // pega a conexão única
+        $this->db = Banco::getConexao(); 
     }
 
-    // Salva usuário novo — senha sempre embaralhada com password_hash
     public function registrar($dados) {
         $stmt = $this->db->prepare(
             "INSERT INTO usuarios (nome, email, senha, cpf, data_nascimento, tipo_usuario)
@@ -26,14 +25,14 @@ class Usuario {
         ]);
     }
 
-    // Busca pelo e-mail — usado no login
+
     public function buscarPorEmail($email) {
         $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE email = :email LIMIT 1");
         $stmt->execute([':email' => $email]);
         return $stmt->fetch();
     }
 
-    // Busca por CPF + data de nascimento — usado na recuperação de senha
+  
     public function buscarPorCpfEData($cpf, $data) {
         $stmt = $this->db->prepare(
             "SELECT * FROM usuarios WHERE cpf = :cpf AND data_nascimento = :data LIMIT 1"
@@ -42,7 +41,7 @@ class Usuario {
         return $stmt->fetch();
     }
 
-    // Verifica se e-mail já está cadastrado
+
     public function emailExiste($email) {
         $stmt = $this->db->prepare("SELECT id FROM usuarios WHERE email = :email LIMIT 1");
         $stmt->execute([':email' => $email]);
@@ -55,7 +54,6 @@ class Usuario {
         return (bool) $stmt->fetch();
     }
 
-    // Atualiza a senha (usada na recuperação)
     public function atualizarSenha($id, $novaSenha) {
         $stmt = $this->db->prepare("UPDATE usuarios SET senha = :senha WHERE id = :id");
         return $stmt->execute([
