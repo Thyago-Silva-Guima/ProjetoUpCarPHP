@@ -1,5 +1,5 @@
 <?php
-// controllers/AuthController.php — Controla login, registro, recuperação e logout
+
 
 require_once __DIR__ . '/../Config/Banco.php'; 
 require_once __DIR__ . '/../models/Usuario.php';
